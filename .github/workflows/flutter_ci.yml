@@ -14,7 +14,7 @@ on:
 
 jobs:
   # -------------------- TEST --------------------
-  test:
+  validating_code:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,8 +29,8 @@ jobs:
       - run: flutter test
 
   # -------------------- BUILD --------------------
-  build_apk:
-    needs: test
+  generating_apk:
+    needs: validating_code
     runs-on: ubuntu-latest
 
     steps:
@@ -72,7 +72,7 @@ jobs:
 
   # -------------------- FIREBASE DISTRIBUTION --------------------
   firebase_distribution:
-    needs: build_apk
+    needs: generating_apk
     runs-on: ubuntu-latest
 
     # Run for:
@@ -111,3 +111,24 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: debugtesters
           file: apk/app-debug.apk
+
+      # -------------------- ZOHO FLOW NOTIFICATION --------------------
+      - name: Notify Zoho Flow
+        run: |
+          BUILD_MODE="${{ github.event.inputs.build_mode || 'release' }}"
+          APK_FILE=""
+          if [ "$BUILD_MODE" = "debug" ]; then
+            APK_FILE="apk/app-debug.apk"
+          else
+            APK_FILE="apk/app-release.apk"
+          fi
+
+          curl -X POST "${{ secrets.ZOHO_FLOW_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "app_name": "MyCiCdApp",
+              "version": "'"${GITHUB_SHA}"'",
+              "build_mode": "'"$BUILD_MODE"'",
+              "apk_url": "'"$APK_FILE"'",
+              "branch": "'"${GITHUB_REF}"'"
+            }'
