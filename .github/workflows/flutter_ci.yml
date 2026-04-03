@@ -46,7 +46,7 @@ jobs:
         if: github.event.inputs.build_mode != 'debug'
         run: |
           mkdir -p android/app
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore/cicd.jks
 
       - run: flutter pub get
 

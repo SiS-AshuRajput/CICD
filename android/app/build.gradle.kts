@@ -33,7 +33,7 @@ android {
     // 🔐 SIGNING CONFIG
     signingConfigs {
         create("release") {
-            storeFile = file("cicd.jks")
+            storeFile = file("keystore/cicd.jks")
             storePassword = System.getenv("KEYSTORE_PASSWORD")
             keyAlias = System.getenv("KEY_ALIAS")
             keyPassword = System.getenv("KEY_PASSWORD")
