@@ -132,5 +132,6 @@ jobs:
               "version": "'"$VERSION"'",
               "build_mode": "'"$BUILD_MODE"'",
               "apk_url": "'"$APK_FILE"'",
-              "branch": "'"${GITHUB_REF}"'"
+              "branch": "'"${GITHUB_REF}"'",
+              "status": "success"          
             }'
