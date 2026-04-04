@@ -116,6 +116,8 @@ jobs:
       - name: Notify Zoho Flow
         run: |
           BUILD_MODE="${{ github.event.inputs.build_mode || 'release' }}"
+          # Extract version from pubspec.yaml
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d '+' -f1)
           APK_FILE=""
           if [ "$BUILD_MODE" = "debug" ]; then
             APK_FILE="apk/app-debug.apk"
@@ -127,7 +129,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "app_name": "MyCiCdApp",
-              "version": "'"${GITHUB_SHA}"'",
+              "version": "'"$VERSION"'",
               "build_mode": "'"$BUILD_MODE"'",
               "apk_url": "'"$APK_FILE"'",
               "branch": "'"${GITHUB_REF}"'"
